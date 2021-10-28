@@ -1,0 +1,7 @@
+{
+    "name": "example",
+    "description": "example",
+    "response": "This an example json file. To remove this command delete it form the commands folder",
+    "code": "",
+    "embed": ""
+}

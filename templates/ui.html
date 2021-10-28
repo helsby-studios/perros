@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <link rel="stylesheet" type="text/css" href="static/index.css" />
+  <link rel="icon" href="/static/Logo.png" type="image/png">
+  <title>Cloud Lists</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <style>
+    body,h1 {font-family: "Raleway", sans-serif}
+    body, html {height: 100%}
+    .bgimg {
+      background-image: url('/static/Background.png');
+      min-height: 100%;
+      background-position: center;
+      background-size: cover;
+    }
+  </style>
+  <body class="bgimg">
+
+    <div class="w3-text-white w3-animate-opacity">
+      <a href="/logout"><button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey w3-animate-opacity">Logout</button></a>
+      <a href="/dashboard"><button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey w3-animate-opacity">Back</button></a>
+      <div class="w3-display-container w3-animate-opacity w3-text-white w3-center">
+        <h1 class="w3-jumbo w3-animate-top">Cloud Lists</h1>
+        <h1 class="w3-animate-top">{{ guild }}</h1>
+        <hr class="w3-border-grey" style="margin:auto;width:40%">
+        <div class="w3-animate-opacity">
+          <h1>Current prefix on {{ guild }}: {{ guild_prefix }}</h1>
+          <form method="POST">
+            <input name="prefix" type="text" class="w3-animate-opacity w3-center w3-row w3-large" placeholder="Enter new prefix">
+            <input type="submit" class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey w3-animate-opacity" value="Submit">
+          </form>
+
+          <div class="w3-ul w3-center w3-quarter">
+            <h1>Current Lists:</h1>
+            <section>
+              {% for list in guild_todolists %}
+              <div>
+                <li class="w3-hover-light-grey w3-animate-opacity">
+                  <a href="/editor/{{ list }}">{{ list }}</a>
+                </li>
+              </div>
+              {% endfor %}
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
