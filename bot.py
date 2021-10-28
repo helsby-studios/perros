@@ -121,6 +121,9 @@ async def apply(ctx, user: discord.User):
                         await user.send(embed=embed)
                         awnser = await client.wait_for("message", timeout = 30, check=lambda message: message.author == user)
                         final.add_field(name=field["question"], value=awnser.content, inline=False)
+                    finish = discord.Embed(title="Application", color=0x68b38c)
+                    finish.add_field(name="Application finished", value="Thank you for your application", inline=False)
+                    await user.send(embed=finish)
                     channel = client.get_channel(int(app[application]["channel"]))
                     await channel.send(embed=final)
                     return
