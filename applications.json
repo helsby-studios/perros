@@ -1,0 +1,28 @@
+{
+    "app1": {
+        "name": "app1-1",
+        "description": "Aply for x",
+        "channel": "888856022259744768",
+        "questions": [
+            {
+                "question": "Are you stupid?"
+            },
+            {
+                "question": "How are you?"
+            }
+        ]
+    },
+    "app2": {
+        "name": "app2-2",
+        "description": "Aply for x",
+        "channel": "888856022259744768",
+        "questions": [
+            {
+                "question": "Are you stupid?"
+            },
+            {
+                "question": "How are you?"
+            }
+        ]
+    }
+}
