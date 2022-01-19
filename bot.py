@@ -1,4 +1,3 @@
-import discord
 import os
 import sys
 import time
@@ -12,8 +11,8 @@ import subprocess
 import mariadb
 from dotenv import load_dotenv
 from discord.ext import commands
-
-
+import mc_rcon
+import database
 
 #invite link https://discord.com/api/oauth2/authorize?client_id=894582921946599474&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
 
@@ -55,10 +54,17 @@ async def on_ready():
     await client.register_application_commands(commands)
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
+#    with open('profilepic.png', 'rb') as image:
+#        await client.user.edit(avatar=image.read())
 
+
+#add role
+async def add_role(channel, user: discord.Member, role):
+    role2 = channel.guild.get_role(role)
+    await user.add_roles(role2)
 
 #application
-async def apply(ctx, user: discord.User):
+async def apply(user: discord.User):
     try:
         app = json.load(open(f"./applications.json"))
     except:
@@ -94,9 +100,10 @@ async def apply(ctx, user: discord.User):
             embed.add_field(name="Aborted", value="Application aborted", inline=False)
             await user.send(embed=embed)
             return
-        print(interaction.values[0])
+        app_id = interaction.values[0]
         for application in app:#load json files
             if interaction.values[0] == application:
+                vals = []
                 embed=discord.Embed(title="Application", color=0x68b38c)
                 embed.add_field(name="Applying for " + app[application]["name"], value=app[application]["description"], inline=False)
                 components = discord.ui.MessageComponents(discord.ui.ActionRow(discord.ui.Button(label="abort", custom_id="abort"),discord.ui.Button(label="continue", custom_id="continue"),),)
@@ -120,12 +127,53 @@ async def apply(ctx, user: discord.User):
                         embed.add_field(name=field["question"], value="awnser below", inline=False)
                         await user.send(embed=embed)
                         awnser = await client.wait_for("message", timeout = 30, check=lambda message: message.author == user)
+                        vals.append(awnser)
                         final.add_field(name=field["question"], value=awnser.content, inline=False)
                     finish = discord.Embed(title="Application", color=0x68b38c)
                     finish.add_field(name="Application finished", value="Thank you for your application", inline=False)
                     await user.send(embed=finish)
                     channel = client.get_channel(int(app[application]["channel"]))
-                    await channel.send(embed=final)
+                    components = discord.ui.MessageComponents(discord.ui.ActionRow(discord.ui.Button(label="Accept", custom_id="accept"), discord.ui.Button(label="Deny", custom_id="deny")))
+                    await channel.send(embed=final, components=components)
+                    interaction = await client.wait_for("component_interaction", check=check)
+                    components.disable_components()
+                    await interaction.response.edit_message(components=components)
+                    if interaction.component.custom_id == "accept":
+                        embed=discord.Embed(title="Application", color=0x68b38c)
+                        embed.add_field(name="Accepted", value="Application accepted", inline=False)
+                        await user.send(embed=embed)
+                        await channel.send(embed=embed)
+                        role = int(app[application]["role"])
+                        await user.add_roles(channel.guild.get_role(role))
+                        if bool(app[application]["whitelist"]) == True:
+                            index = 0
+                            for field in app[application]["questions"]:
+                                index += 1
+                                if field["question"] == app[application]["ign_var"]:
+                                    ign = vals[index - 1].content
+                                    mc_rcon.whitelist_player(ign)
+                                    break
+                        index = 0
+                        data = ""
+                        for field in app[application]["questions"]:
+                            index += 1
+                            vals[index -1].content
+                            data = data + str(field["question"]) + ": " + str(vals[index -1].content) + " \n  "
+                        database.insert("users", user, str(app_id + " \n  " + data))
+
+
+
+
+                        print("accepted")
+
+                    if interaction.component.custom_id == "deny":
+                        embed=discord.Embed(title="Application", color=0xc92626)
+                        embed.add_field(name="Denied", value="Application denied", inline=False)
+                        await user.send(embed=embed)
+                        final.add_field(name="Denied", value="Application denied", inline=False)
+                        await channel.send(embed=embed)
+                        print("denied")
+
                     return
                 return
     else:
@@ -152,9 +200,7 @@ async def on_slash_command(interaction: discord.Interaction):
         embed=discord.Embed(title="Application", color=0x68b38c)
         embed.add_field(name="Application started", value=interaction.user, inline=False)
         await interaction.response.send_message(embed=embed)
-        await apply(interaction.response, interaction.user)
-        print("applied")
-
+        await apply(interaction.user)
 
 
     #custom commands
