@@ -16,8 +16,7 @@ from quart_discord import DiscordOAuth2Session
 from dotenv import load_dotenv
 
 #start bot
-thread = Thread(target=bot.run)
-thread.start()
+thread = threading.Thread(target=bot.bot_main)
 
 #load envs
 load_dotenv()
@@ -67,4 +66,5 @@ async def callback():
 
 
 if __name__ == "__main__": #run webserver
+	thread.start()
 	app.run(debug=True, port=80)

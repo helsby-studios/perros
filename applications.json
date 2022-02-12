@@ -24,9 +24,13 @@
         "channel": "921512593108119642",
         "role": "921512580156104714",
         "whitelist": "True",
+        "ign_var":  "ign",
         "questions": [
             {
                 "question": "Are you stupid?"
+            },
+                        {
+                "question": "ign"
             },
             {
                 "question": "How are you?"

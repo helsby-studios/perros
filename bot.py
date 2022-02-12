@@ -27,11 +27,13 @@ token = os.getenv("DISCORD_TOKEN")
 dc_client_id = os.getenv("DISCORD_CLIENT_ID")
 dc_client_secret = os.getenv("DISCORD_CLIENT_SECRET")
 dc_callback_uri = os.getenv("DISCORD_CALLBACK_URI")
+dev_mode = os.getenv("dev_mode")
 
 client = discord.Client()
 
 #set commands
-commands = [discord.ApplicationCommand(name="ping", description="Shows the roundtrip time"), discord.ApplicationCommand(name="apply", description="Start a application"),]
+commands = [discord.ApplicationCommand(name="ping", description="Shows the roundtrip time"), discord.ApplicationCommand(name="apply", description="Start a application"), discord.ApplicationCommand(name="create-todo", description="Create a Todolist"), ]
+
 av_commands = os.listdir("./commands")
 for command in av_commands:
     command = json.load(open(f"./commands/{command}"))
@@ -54,8 +56,13 @@ async def on_ready():
     await client.register_application_commands(commands)
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
-#    with open('profilepic.png', 'rb') as image:
-#        await client.user.edit(avatar=image.read())
+    if dev_mode == "true":
+        print("Dev mode enabled")
+        await client.change_presence(activity=discord.Game(name="Perros Development"))
+    else:
+        await client.change_presence(activity=discord.Game(name="cloudcorp.uk"))
+        with open('profilepic.png', 'rb') as image:
+            await client.user.edit(avatar=image.read())
 
 
 #add role
@@ -179,6 +186,30 @@ async def apply(user: discord.User):
     else:
         await user.send("There are no applications available")
 
+class todolist:
+    async def create(user):
+        embed=discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Create todolist", value="Please enter the name of the todolist", inline=False)
+        await user.send(embed=embed)
+        awnser_titel = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
+        embed=discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Create todolist", value="Please enter the description of the todolist", inline=False)
+        await user.send(embed=embed)
+        awnser_descript = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
+
+        if os.path.exists("./todolists/" + awnser_titel.content + ".json"):
+            embed=discord.Embed(title="Todolist", color=0xc92626)
+            embed.add_field(name="Error", value="Todolist already exists", inline=False)
+            await user.send(embed=embed)
+            return
+        else:
+            embed = discord.Embed(title="Todolist", color=0x68b38c)
+            embed.add_field(name=awnser_titel.content, value=awnser_descript.content, inline=False)
+            embed.add_field(name="created...", value=".", inline=False)
+            await user.send(embed=embed)
+            with open("./todolists/" + awnser_titel.content + ".json", "w") as f:
+                json.dump({"title": awnser_titel.content, "creator": str(user), "description": awnser_descript.content,
+                           "tasks": []}, f)
 
 
 #handle slash commands
@@ -202,6 +233,12 @@ async def on_slash_command(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed)
         await apply(interaction.user)
 
+    if command_name == "create-todo":
+        embed = discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Please check your DMs", value="Creation started", inline=False)
+        await interaction.response.send_message(embed=embed)
+        await todolist.create(user = interaction.user)
+
 
     #custom commands
     av_commands = os.listdir("./commands")
@@ -224,5 +261,10 @@ async def on_slash_command(interaction: discord.Interaction):
             else:
                 await interaction.response.send_message(command["response"])
 
-        
-client.run(token)
+
+def bot_main():
+    client.run(token)
+
+#run bot standalone
+if __name__ == "__main__":
+    bot_main()
