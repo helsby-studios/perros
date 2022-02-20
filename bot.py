@@ -38,6 +38,9 @@ commands = [
     discord.ApplicationCommand(name="create-todo", description="Create a Todolist"),
     discord.ApplicationCommand(name="delete-todo", description="Delete a Todolist"),
     discord.ApplicationCommand(name="add-todo", description="Add a task to a Todolist"),
+    discord.ApplicationCommand(name="remove-todo", description="Remove a task from a Todolist"),
+    discord.ApplicationCommand(name="list-todo", description="List all Todolists"),
+    discord.ApplicationCommand(name="view-todo", description="List all Todolist tasks"),
 ]
 
 av_commands = os.listdir("./commands")
@@ -331,6 +334,145 @@ class todolist:
             embed.add_field(name="Error", value="Todolist does not exist", inline=False)
             await user.send(embed=embed)
 
+    async def delete_task(user):
+        embed=discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Delete task", value="Please select the name of the todolist", inline=False)
+        options = []
+        for list in os.listdir('./todolists/'):  # load json files
+            options.append(discord.ui.SelectOption(label=list, value=list), )
+        components = discord.ui.MessageComponents(
+            discord.ui.ActionRow(
+                discord.ui.SelectMenu(
+                    custom_id="select",
+                    options=options,
+                ),
+            ),
+            discord.ui.ActionRow(
+                discord.ui.Button(label="abort", custom_id="abort"),
+            ),
+        )
+        await user.send(embed=embed, components=components)
+
+        def check(interaction: discord.Interaction):
+            return True
+
+        interaction = await client.wait_for("component_interaction", check=check)
+        components.disable_components()
+        await interaction.response.edit_message(components=components)
+        if interaction.component.custom_id == "abort":
+            embed = discord.Embed(title="Todolist", color=0x68b38c)
+            embed.add_field(name="Aborted", value="Edit aborted", inline=False)
+            await user.send(embed=embed)
+            return
+
+        if os.path.exists("./todolists/" + interaction.values[0]):
+            file = interaction.values[0]
+            with open("./todolists/" + file, "r") as f:
+                data = json.load(f)
+
+            if data["creator"] == str(user):
+                embed = discord.Embed(title="Todolist", color=0x68b38c)
+                embed.add_field(name="Delete task", value="Please select the task you want to delete", inline=False)
+                options = []
+                for task in data["tasks"]:
+                    options.append(discord.ui.SelectOption(label=task["name"], value=task["name"]), )
+                components = discord.ui.MessageComponents(
+                    discord.ui.ActionRow(
+                        discord.ui.SelectMenu(
+                            custom_id="select",
+                            options=options,
+                        ),
+                    ),
+                    discord.ui.ActionRow(
+                        discord.ui.Button(label="abort", custom_id="abort"),
+                    ),
+                )
+                await user.send(embed=embed, components=components)
+                interaction = await client.wait_for("component_interaction", check=check)
+                components.disable_components()
+                await interaction.response.edit_message(components=components)
+                if interaction.component.custom_id == "abort":
+                    embed = discord.Embed(title="Todolist", color=0x68b38c)
+                    embed.add_field(name="Aborted", value="Edit aborted", inline=False)
+                    await user.send(embed=embed)
+                    return
+
+                for task in data["tasks"]:
+                    if task["name"] == interaction.values[0]:
+                        data["tasks"].remove(task)
+                        break
+                with open("./todolists/" + file, "w") as f:
+                    json.dump(data, f)
+                embed = discord.Embed(title="Todolist", color=0x68b38c)
+                embed.add_field(name="Task deleted", value = "Task deleted", inline=False)
+                await user.send(embed=embed)
+                with open("./todolists/" + file, "r") as f:
+                    data = json.load(f)
+                embed = discord.Embed(title="Todolist", color=0x68b38c)
+                for task in data["tasks"]:
+                    embed.add_field(name=task["name"], value=task["description"], inline=False)
+                await user.send(embed=embed)
+            else:
+                embed = discord.Embed(title="Todolist", color=0xc92626)
+                embed.add_field(name="Error", value="You do not have permission to edit this todolist", inline=False)
+                await user.send(embed=embed)
+        else:
+            embed = discord.Embed(title="Todolist", color=0xc92626)
+            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
+            await user.send(embed=embed)
+
+    async def list_task(user):
+        embed = discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="List tasks", value="Please select the name of the todolist", inline=False)
+        options = []
+        for list in os.listdir('./todolists/'):  # load json files
+            options.append(discord.ui.SelectOption(label=list, value=list), )
+        components = discord.ui.MessageComponents(
+            discord.ui.ActionRow(
+                discord.ui.SelectMenu(
+                    custom_id="select",
+                    options=options,
+                ),
+            ),
+            discord.ui.ActionRow(
+                discord.ui.Button(label="abort", custom_id="abort"),
+            ),
+        )
+        await user.send(embed=embed, components=components)
+
+        def check(interaction: discord.Interaction):
+            return True
+
+        interaction = await client.wait_for("component_interaction", check=check)
+        components.disable_components()
+        await interaction.response.edit_message(components=components)
+        if interaction.component.custom_id == "abort":
+            embed = discord.Embed(title="Todolist", color=0x68b38c)
+            embed.add_field(name="Aborted", value="Listing aborted", inline=False)
+            await user.send(embed=embed)
+            return
+
+        if os.path.exists("./todolists/" + interaction.values[0]):
+            with open("./todolists/" + interaction.values[0], "r") as f:
+                data = json.load(f)
+
+
+            if data["creator"] == str(user):
+                embed = discord.Embed(title="Todolist", color=0x68b38c)
+                for task in data["tasks"]:
+                    embed.add_field(name=task["name"], value=task["description"], inline=False)
+                await user.send(embed=embed)
+
+            else:
+                embed = discord.Embed(title="Todolist", color=0xc92626)
+                embed.add_field(name="Error", value="You do not have permission to view this todolist", inline=False)
+                await user.send(embed=embed)
+        else:
+            embed = discord.Embed(title="Todolist", color=0xc92626)
+            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
+            await user.send(embed=embed)
+
+
 
 
 
@@ -373,6 +515,25 @@ async def on_slash_command(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed)
         await todolist.add_task(user = interaction.user)
 
+    if command_name == "remove-todo":
+        embed = discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Please check your DMs", value="Removing task started", inline=False)
+        await interaction.response.send_message(embed=embed)
+        await todolist.delete_task(user = interaction.user)
+
+    if command_name == "list-todo":
+        embed = discord.Embed(title="Todolist", color=0x68b38c)
+        for list in os.listdir('./todolists/'):  # load json files
+            with open("./todolists/" + list, "r") as f:
+                data = json.load(f)
+            embed.add_field(name=list, value="Created by " + data["creator"], inline=False)
+        await interaction.response.send_message(embed=embed)
+
+    if command_name == "view-todo":
+        embed = discord.Embed(title="Todolist", color=0x68b38c)
+        embed.add_field(name="Please check your DMs", value="Viewing todolist started", inline=False)
+        await interaction.response.send_message(embed=embed)
+        await todolist.list_task(user = interaction.user)
 
     #custom commands
     av_commands = os.listdir("./commands")
