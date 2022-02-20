@@ -10,7 +10,7 @@ import datetime
 import subprocess
 import mariadb
 from dotenv import load_dotenv
-from discord.ext import commands
+from discord.ext import commands, tasks
 import mc_rcon
 import database
 
@@ -57,7 +57,21 @@ async def aexec(code):
     )
     return await locals()['__ex']()
 
+@tasks.loop()
+async def watchdog():
+    pass
 
+@tasks.loop(seconds=5.0)
+async def watchdog_5s():
+    pass
+
+@tasks.loop(seconds=300.0):
+async def watchdog_5m():
+    pass
+
+@tasks.loop(seconds=1800.0)
+async def watchdog_30m():
+    pass
 
 #onready event
 @client.event
@@ -72,6 +86,12 @@ async def on_ready():
         await client.change_presence(activity=discord.Game(name="cloudcorp.uk"))
         with open('profilepic.png', 'rb') as image:
             await client.user.edit(avatar=image.read())
+
+    #start watchdogs
+    watchdog.start()
+    watchdog_5s.start()
+    watchdog_5m.start()
+    watchdog_30m.start()
 
 
 #add role
