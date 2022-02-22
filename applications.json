@@ -2,10 +2,10 @@
     "app1": {
         "name": "app1-1",
         "description": "Aply for x",
-        "channel": "921512593108119642",
+        "channel": "921512654525333544",
         "role": "921512580156104714",
-        "whitelist": "True",
-        "ign_var":  "ign",
+        "whitelist": "False",
+        "ign_var":  "",
         "questions": [
             {
                 "question": "Are you stupid?"
@@ -21,7 +21,7 @@
     "app2": {
         "name": "app2-2",
         "description": "Aply for x",
-        "channel": "921512593108119642",
+        "channel": "921512654525333544",
         "role": "921512580156104714",
         "whitelist": "True",
         "ign_var":  "ign",

@@ -8,21 +8,14 @@ import asyncio
 import requests
 import datetime
 import subprocess
-import mariadb
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
 import mc_rcon
-import database
 
 #invite link https://discord.com/api/oauth2/authorize?client_id=894582921946599474&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
 
 #load envs
 load_dotenv()
-db_user = os.getenv("DB_USER")
-db_passwd = os.getenv("DB_PASSWD")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_db = os.getenv("DB_DB")
 token = os.getenv("DISCORD_TOKEN")
 dc_client_id = os.getenv("DISCORD_CLIENT_ID")
 dc_client_secret = os.getenv("DISCORD_CLIENT_SECRET")
@@ -65,7 +58,7 @@ async def watchdog():
 async def watchdog_5s():
     pass
 
-@tasks.loop(seconds=300.0):
+@tasks.loop(seconds=300.0)
 async def watchdog_5m():
     pass
 
@@ -181,7 +174,7 @@ async def apply(user: discord.User):
                         await channel.send(embed=embed)
                         role = int(app[application]["role"])
                         await user.add_roles(channel.guild.get_role(role))
-                        if bool(app[application]["whitelist"]) == True:
+                        if app[application]["whitelist"] == "True":
                             index = 0
                             for field in app[application]["questions"]:
                                 index += 1
@@ -189,19 +182,13 @@ async def apply(user: discord.User):
                                     ign = vals[index - 1].content
                                     mc_rcon.whitelist_player(ign)
                                     break
+
+                        question = []
                         index = 0
-                        data = ""
                         for field in app[application]["questions"]:
-                            index += 1
-                            vals[index -1].content
-                            data = data + str(field["question"]) + ": " + str(vals[index -1].content) + " \n  "
-                        database.insert("users", user, str(app_id + " \n  " + data))
-
-
-
-
-                        print("accepted")
-
+                            question.append({field["question"]: vals[index -1].content})
+                        with open("./app_logs/" + str(interaction.user) + "_" + application + "_" + str(datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + ".json", "w") as f:
+                            json.dump({str(interaction.user): {"user": str(interaction.user.id), "application": application, "date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "questions": question}}, f, indent=4, sort_keys=True)
                     if interaction.component.custom_id == "deny":
                         embed=discord.Embed(title="Application", color=0xc92626)
                         embed.add_field(name="Denied", value="Application denied", inline=False)

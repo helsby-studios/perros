@@ -9,7 +9,6 @@ import asyncio
 import requests
 import datetime
 import threading
-import database
 import bot
 from quart import Quart, render_template, request, session, redirect, url_for
 from quart_discord import DiscordOAuth2Session
@@ -20,11 +19,6 @@ thread = threading.Thread(target=bot.bot_main)
 
 #load envs
 load_dotenv()
-db_user = os.getenv("DB_USER")
-db_passwd = os.getenv("DB_PASSWD")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_db = os.getenv("DB_DB")
 token = os.getenv("DISCORD_TOKEN")
 ipc_secret_key = os.getenv("IPC_SECRET_KEY")
 dc_client_id = os.getenv("DISCORD_CLIENT_ID")
