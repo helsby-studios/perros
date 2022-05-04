@@ -12,9 +12,10 @@ from dotenv import load_dotenv
 from discord.ext import commands, tasks
 import mc_rcon
 
-#invite link https://discord.com/api/oauth2/authorize?client_id=894582921946599474&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
+# invite link https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
+# new invite https://discord.com/oauth2/authorize?client_id=885971593782763530&permissions=8https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&scope=bot%20applications.commands
 
-#load envs
+# load envs
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 dc_client_id = os.getenv("DISCORD_CLIENT_ID")
@@ -22,54 +23,170 @@ dc_client_secret = os.getenv("DISCORD_CLIENT_SECRET")
 dc_callback_uri = os.getenv("DISCORD_CALLBACK_URI")
 dev_mode = os.getenv("dev_mode")
 
-client = discord.Client()
+client = commands.Bot(command_prefix=None)
 
-#set commands
-commands = [
-    discord.ApplicationCommand(name="ping", description="Shows the roundtrip time"),
-    discord.ApplicationCommand(name="apply", description="Start a application"),
-    discord.ApplicationCommand(name="create-todo", description="Create a Todolist"),
-    discord.ApplicationCommand(name="delete-todo", description="Delete a Todolist"),
-    discord.ApplicationCommand(name="add-todo", description="Add a task to a Todolist"),
-    discord.ApplicationCommand(name="remove-todo", description="Remove a task from a Todolist"),
-    discord.ApplicationCommand(name="list-todo", description="List all Todolists"),
-    discord.ApplicationCommand(name="view-todo", description="List all Todolist tasks"),
-]
-
-av_commands = os.listdir("./commands")
-for command in av_commands:
-    command = json.load(open(f"./commands/{command}"))
-    commands.append(discord.ApplicationCommand(name=command["name"], description=command["description"]))
+if dev_mode == "true":
+    guild_id = 888854978230374430
 
 
-#async executor
-async def aexec(code):
-    exec(
-        f'async def __ex(): ' +
-        ''.join(f'\n {l}' for l in code.split('\n'))
+# add role
+async def add_role(channel, user: discord.Member, role):
+    role2 = channel.guild.get_role(role)
+    await user.add_roles(role2)
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="one",
+                type=discord.ApplicationCommandOptionType.integer,
+                description="The first number that you want to add."
+            ),
+            discord.ApplicationCommandOption(
+                name="two",
+                type=discord.ApplicationCommandOptionType.integer,
+                description="The second number that you want to add."
+            ),
+        ]
     )
-    return await locals()['__ex']()
+)
+async def add(ctx, one: int, two: int):
+    await ctx.interaction.response.send_message(one + two)
 
-@tasks.loop()
-async def watchdog():
-    pass
 
-@tasks.loop(seconds=5.0)
-async def watchdog_5s():
-    pass
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta()
+)
+async def ping(ctx):
+    if round(client.latency * 1000) <= 50:
+        embed = discord.Embed(title="PING",
+                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+                              color=0x44ff44)
+    elif round(client.latency * 1000) <= 100:
+        embed = discord.Embed(title="PING",
+                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+                              color=0xffd000)
+    elif round(client.latency * 1000) <= 200:
+        embed = discord.Embed(title="PING",
+                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+                              color=0xff6600)
+    else:
+        embed = discord.Embed(title="PING",
+                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+                              color=0x990000)
+    await ctx.interaction.response.send_message(embed=embed)
 
-@tasks.loop(seconds=300.0)
-async def watchdog_5m():
-    pass
 
-@tasks.loop(seconds=1800.0)
-async def watchdog_30m():
-    pass
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to load."
+            ),
+        ]
+    )
+)
+async def load(ctx, cog: str):
+    try:
+        ctx.bot.load_extension(f"cogs.{cog}")
+        await ctx.interaction.response.send_message(f"Loaded {cog}")
+        if dev_mode == "true":
+            await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
+        else:
+            await ctx.bot.register_application_commands()
+    except discord.ext.commands.errors.ExtensionAlreadyLoaded as alrdy_loaded:
+        await ctx.interaction.response.send_message(f"{cog} is already loaded.")
+    except discord.ext.commands.errors.ExtensionNotFound as not_found:
+        await ctx.interaction.response.send_message(f"{cog} is not found.")
+    except discord.ext.commands.errors.ExtensionFailed as failed:
+        await ctx.interaction.response.send_message(f"{cog} failed to load.")
+    except Exception as e:
+        if dev_mode == "true":
+            await ctx.interaction.response.send_message(f"{cog} failed to load.\n{e}")
+        else:
+            pass
 
-#onready event
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to unload."
+            ),
+        ]
+    )
+)
+async def unload(ctx, cog: str):
+    try:
+        ctx.bot.unload_extension(f"cogs.{cog}")
+        await ctx.interaction.response.send_message(f"Unloaded {cog}")
+        if dev_mode == "true":
+            await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
+        else:
+            await ctx.bot.register_application_commands()
+    except discord.ext.commands.errors.ExtensionNotLoaded as not_loaded:
+        await ctx.interaction.response.send_message(f"{cog} is not loaded.")
+    except Exception as e:
+        if dev_mode == "true":
+            await ctx.interaction.response.send_message(f"{cog} failed to unload.\n{e}")
+        else:
+            pass
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to reload."
+            ),
+        ]
+    )
+)
+async def reload(ctx, cog: str):
+    try:
+        ctx.bot.unload_extension(f"cogs.{cog}")
+        ctx.bot.load_extension(f"cogs.{cog}")
+        await ctx.interaction.response.send_message(f"reloaded {cog}")
+        if dev_mode == "true":
+            await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
+        else:
+            await ctx.bot.register_application_commands()
+    except Exception as e:
+        if dev_mode == "true":
+            await ctx.interaction.response.send_message(f"{cog} failed to reload.\n{e}")
+        else:
+            ctx.interaction.response.send_message(f"{cog} failed to reload.")
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="link",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The link of the cog you want to download. (raw)"
+            ),
+        ]
+    )
+)
+async def download(ctx, link: str):
+    response = requests.get(link)
+    with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
+        f.write(response.content)
+    await ctx.interaction.response.send_message(
+        f"Downloaded {response.url.split('/')[-1]} \n use `load {response.url.split('/')[-1]}` to load it.")
+
+
+# onready event
 @client.event
 async def on_ready():
-    await client.register_application_commands(commands)
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
     if dev_mode == "true":
@@ -80,493 +197,24 @@ async def on_ready():
         with open('profilepic.png', 'rb') as image:
             await client.user.edit(avatar=image.read())
 
-    #start watchdogs
-    watchdog.start()
-    watchdog_5s.start()
-    watchdog_5m.start()
-    watchdog_30m.start()
-
-
-#add role
-async def add_role(channel, user: discord.Member, role):
-    role2 = channel.guild.get_role(role)
-    await user.add_roles(role2)
-
-#application
-async def apply(user: discord.User):
-    try:
-        app = json.load(open(f"./applications.json"))
-    except:
-        app = {}
-    if app != "" and app != None:
-        embed=discord.Embed(title="Application", color=0x68b38c)
-        embed.add_field(name="What do you want to apply for?", value="please select", inline=False)
-        options = []
-        for application in app:#load json files
-            options.append(discord.ui.SelectOption(label=app[application]["name"], value=application),)
-        components = discord.ui.MessageComponents(
-            discord.ui.ActionRow(
-                discord.ui.SelectMenu(
-                    custom_id="select",
-                    options=options,
-                ),
-            ),
-            discord.ui.ActionRow(
-                discord.ui.Button(label="abort", custom_id="abort"),
-            ),
-        )
-
-
-        await user.send(embed=embed,components=components)
-
-        def check(interaction: discord.Interaction):
-            return True
-        interaction = await client.wait_for("component_interaction", check=check)
-        components.disable_components()
-        await interaction.response.edit_message(components=components)
-        if interaction.component.custom_id == "abort":
-            embed=discord.Embed(title="Application", color=0x68b38c)
-            embed.add_field(name="Aborted", value="Application aborted", inline=False)
-            await user.send(embed=embed)
-            return
-        app_id = interaction.values[0]
-        for application in app:#load json files
-            if interaction.values[0] == application:
-                vals = []
-                embed=discord.Embed(title="Application", color=0x68b38c)
-                embed.add_field(name="Applying for " + app[application]["name"], value=app[application]["description"], inline=False)
-                components = discord.ui.MessageComponents(discord.ui.ActionRow(discord.ui.Button(label="abort", custom_id="abort"),discord.ui.Button(label="continue", custom_id="continue"),),)
-                await user.send(embed=embed, components=components)
-                interaction = await client.wait_for("component_interaction", check=check)
-                components.disable_components()
-                await interaction.response.edit_message(components=components)
-                if interaction.component.custom_id == "abort":
-                    embed=discord.Embed(title="Application", color=0x68b38c)
-                    embed.add_field(name="Aborted", value="Application aborted", inline=False)
-                    await user.send(embed=embed)
-                    return
-                if interaction.component.custom_id == "continue":
-                    embed=discord.Embed(title="Application", color=0x68b38c)
-                    embed.add_field(name="Applying for " + app[application]["name"], value=app[application]["description"], inline=False)
-                    embed.add_field(name="Please enter your application", value="app", inline=False)
-                    await user.send(embed=embed)
-                    final=discord.Embed(title="Application - " + str(interaction.user), color=0x68b38c)
-                    for field in app[application]["questions"]:
-                        embed=discord.Embed(title="Application", color=0x68b38c)
-                        embed.add_field(name=field["question"], value="awnser below", inline=False)
-                        await user.send(embed=embed)
-                        awnser = await client.wait_for("message", timeout = 30, check=lambda message: message.author == user)
-                        vals.append(awnser)
-                        final.add_field(name=field["question"], value=awnser.content, inline=False)
-                    finish = discord.Embed(title="Application", color=0x68b38c)
-                    finish.add_field(name="Application finished", value="Thank you for your application", inline=False)
-                    await user.send(embed=finish)
-                    channel = client.get_channel(int(app[application]["channel"]))
-                    components = discord.ui.MessageComponents(discord.ui.ActionRow(discord.ui.Button(label="Accept", custom_id="accept"), discord.ui.Button(label="Deny", custom_id="deny")))
-                    await channel.send(embed=final, components=components)
-                    interaction = await client.wait_for("component_interaction", check=check)
-                    components.disable_components()
-                    await interaction.response.edit_message(components=components)
-                    if interaction.component.custom_id == "accept":
-                        embed=discord.Embed(title="Application", color=0x68b38c)
-                        embed.add_field(name="Accepted", value="Application accepted", inline=False)
-                        await user.send(embed=embed)
-                        await channel.send(embed=embed)
-                        role = int(app[application]["role"])
-                        await user.add_roles(channel.guild.get_role(role))
-                        if app[application]["whitelist"] == "True":
-                            index = 0
-                            for field in app[application]["questions"]:
-                                index += 1
-                                if field["question"] == app[application]["ign_var"]:
-                                    ign = vals[index - 1].content
-                                    mc_rcon.whitelist_player(ign)
-                                    break
-
-                        question = []
-                        index = 0
-                        for field in app[application]["questions"]:
-                            question.append({field["question"]: vals[index -1].content})
-                        with open("./app_logs/" + str(interaction.user) + "_" + application + "_" + str(datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")) + ".json", "w") as f:
-                            json.dump({str(interaction.user): {"user": str(interaction.user.id), "application": application, "date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "questions": question}}, f, indent=4, sort_keys=True)
-                    if interaction.component.custom_id == "deny":
-                        embed=discord.Embed(title="Application", color=0xc92626)
-                        embed.add_field(name="Denied", value="Application denied", inline=False)
-                        await user.send(embed=embed)
-                        final.add_field(name="Denied", value="Application denied", inline=False)
-                        await channel.send(embed=embed)
-                        print("denied")
-
-                    return
-                return
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            try:
+                client.load_extension(f'cogs.{filename[:-3]}')
+                print(f"Loaded {filename[:-3]}")
+            except Exception as e:
+                print(f"Failed to load {filename[:-3]}\n{e}")
+    if dev_mode == "true":
+        await client.register_application_commands(guild=discord.Object(guild_id))
     else:
-        await user.send("There are no applications available")
-
-class todolist:
-    async def create(user):
-        embed=discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Create todolist", value="Please enter the name of the todolist", inline=False)
-        await user.send(embed=embed)
-        awnser_titel = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
-        embed=discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Create todolist", value="Please enter the description of the todolist", inline=False)
-        await user.send(embed=embed)
-        awnser_descript = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
-
-        if os.path.exists("./todolists/" + awnser_titel.content + ".json"):
-            embed=discord.Embed(title="Todolist", color=0xc92626)
-            embed.add_field(name="Error", value="Todolist already exists", inline=False)
-            await user.send(embed=embed)
-            return
-        else:
-            embed = discord.Embed(title="Todolist", color=0x68b38c)
-            embed.add_field(name=awnser_titel.content, value=awnser_descript.content, inline=False)
-            embed.add_field(name="created...", value=".", inline=False)
-            await user.send(embed=embed)
-            with open("./todolists/" + awnser_titel.content + ".json", "w") as f:
-                json.dump({"title": awnser_titel.content, "creator": str(user), "description": awnser_descript.content, "tasks": []}, f)
-
-    async def delete(user):
-        embed=discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Delete todolist", value="Please select the name of the todolist", inline=False)
-        options = []
-        for list in os.listdir('./todolists/'):  # load json files
-            options.append(discord.ui.SelectOption(label=list, value=list), )
-        components = discord.ui.MessageComponents(
-            discord.ui.ActionRow(
-                discord.ui.SelectMenu(
-                    custom_id="select",
-                    options=options,
-                ),
-            ),
-            discord.ui.ActionRow(
-                discord.ui.Button(label="abort", custom_id="abort"),
-            ),
-        )
-        await user.send(embed=embed, components=components)
-
-        def check(interaction: discord.Interaction):
-            return True
-        interaction = await client.wait_for("component_interaction", check=check)
-        components.disable_components()
-        await interaction.response.edit_message(components=components)
-        if interaction.component.custom_id == "abort":
-            embed=discord.Embed(title="Todolist", color=0x68b38c)
-            embed.add_field(name="Aborted", value="Deletion aborted", inline=False)
-            await user.send(embed=embed)
-            return
-
-        if os.path.exists("./todolists/" + interaction.values[0]):
-            with open("./todolists/" + interaction.values[0], "r") as f:
-                data = json.load(f)
-
-            if data["creator"] == str(user):
-                os.remove("./todolists/" + interaction.values[0])
-                embed=discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Deleted", value="Todolist deleted", inline=False)
-                await user.send(embed=embed)
-            else:
-                embed=discord.Embed(title="Todolist", color=0xc92626)
-                embed.add_field(name="Error", value="You do not have permission to delete this todolist", inline=False)
-                await user.send(embed=embed)
-        else:
-            embed=discord.Embed(title="Todolist", color=0xc92626)
-            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
-            await user.send(embed=embed)
-
-    async def add_task(user):
-        embed=discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Add task", value="Please select the name of the todolist", inline=False)
-        options = []
-        for list in os.listdir('./todolists/'):  # load json files
-            options.append(discord.ui.SelectOption(label=list, value=list), )
-        components = discord.ui.MessageComponents(
-            discord.ui.ActionRow(
-                discord.ui.SelectMenu(
-                    custom_id="select",
-                    options=options,
-                ),
-            ),
-            discord.ui.ActionRow(
-                discord.ui.Button(label="abort", custom_id="abort"),
-            ),
-        )
-        await user.send(embed=embed, components=components)
-
-        def check(interaction: discord.Interaction):
-            return True
-
-        interaction = await client.wait_for("component_interaction", check=check)
-        components.disable_components()
-        await interaction.response.edit_message(components=components)
-        if interaction.component.custom_id == "abort":
-            embed = discord.Embed(title="Todolist", color=0x68b38c)
-            embed.add_field(name="Aborted", value="Edit aborted", inline=False)
-            await user.send(embed=embed)
-            return
-
-        if os.path.exists("./todolists/" + interaction.values[0]):
-            with open("./todolists/" + interaction.values[0], "r") as f:
-                data = json.load(f)
-
-            if data["creator"] == str(user):
-                embed=discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Add task", value="Please enter the name of the task", inline=False)
-                await user.send(embed=embed)
-                name = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
-                embed=discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Add task", value="Please enter the description of the task", inline=False)
-                await user.send(embed=embed)
-                description = await client.wait_for("message", timeout=30, check=lambda message: message.author == user)
-                with open("./todolists/" + interaction.values[0], "r") as f:
-                    data = json.load(f)
-                data["tasks"].append({"name": name.content, "description": description.content, "done": False})
-                with open("./todolists/" + interaction.values[0], "w") as f:
-                    json.dump(data, f)
-                embed=discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Added", value="Task added", inline=False)
-                with open("./todolists/" + interaction.values[0], "r") as f:
-                    data = json.load(f)
-                embed = discord.Embed(title="Todolist", color=0x68b38c)
-                for task in data["tasks"]:
-                    embed.add_field(name=task["name"], value=task["description"], inline=False)
-                await user.send(embed=embed)
-
-            else:
-                embed = discord.Embed(title="Todolist", color=0xc92626)
-                embed.add_field(name="Error", value="You do not have permission to edit this todolist", inline=False)
-                await user.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Todolist", color=0xc92626)
-            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
-            await user.send(embed=embed)
-
-    async def delete_task(user):
-        embed=discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Delete task", value="Please select the name of the todolist", inline=False)
-        options = []
-        for list in os.listdir('./todolists/'):  # load json files
-            options.append(discord.ui.SelectOption(label=list, value=list), )
-        components = discord.ui.MessageComponents(
-            discord.ui.ActionRow(
-                discord.ui.SelectMenu(
-                    custom_id="select",
-                    options=options,
-                ),
-            ),
-            discord.ui.ActionRow(
-                discord.ui.Button(label="abort", custom_id="abort"),
-            ),
-        )
-        await user.send(embed=embed, components=components)
-
-        def check(interaction: discord.Interaction):
-            return True
-
-        interaction = await client.wait_for("component_interaction", check=check)
-        components.disable_components()
-        await interaction.response.edit_message(components=components)
-        if interaction.component.custom_id == "abort":
-            embed = discord.Embed(title="Todolist", color=0x68b38c)
-            embed.add_field(name="Aborted", value="Edit aborted", inline=False)
-            await user.send(embed=embed)
-            return
-
-        if os.path.exists("./todolists/" + interaction.values[0]):
-            file = interaction.values[0]
-            with open("./todolists/" + file, "r") as f:
-                data = json.load(f)
-
-            if data["creator"] == str(user):
-                embed = discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Delete task", value="Please select the task you want to delete", inline=False)
-                options = []
-                for task in data["tasks"]:
-                    options.append(discord.ui.SelectOption(label=task["name"], value=task["name"]), )
-                components = discord.ui.MessageComponents(
-                    discord.ui.ActionRow(
-                        discord.ui.SelectMenu(
-                            custom_id="select",
-                            options=options,
-                        ),
-                    ),
-                    discord.ui.ActionRow(
-                        discord.ui.Button(label="abort", custom_id="abort"),
-                    ),
-                )
-                await user.send(embed=embed, components=components)
-                interaction = await client.wait_for("component_interaction", check=check)
-                components.disable_components()
-                await interaction.response.edit_message(components=components)
-                if interaction.component.custom_id == "abort":
-                    embed = discord.Embed(title="Todolist", color=0x68b38c)
-                    embed.add_field(name="Aborted", value="Edit aborted", inline=False)
-                    await user.send(embed=embed)
-                    return
-
-                for task in data["tasks"]:
-                    if task["name"] == interaction.values[0]:
-                        data["tasks"].remove(task)
-                        break
-                with open("./todolists/" + file, "w") as f:
-                    json.dump(data, f)
-                embed = discord.Embed(title="Todolist", color=0x68b38c)
-                embed.add_field(name="Task deleted", value = "Task deleted", inline=False)
-                await user.send(embed=embed)
-                with open("./todolists/" + file, "r") as f:
-                    data = json.load(f)
-                embed = discord.Embed(title="Todolist", color=0x68b38c)
-                for task in data["tasks"]:
-                    embed.add_field(name=task["name"], value=task["description"], inline=False)
-                await user.send(embed=embed)
-            else:
-                embed = discord.Embed(title="Todolist", color=0xc92626)
-                embed.add_field(name="Error", value="You do not have permission to edit this todolist", inline=False)
-                await user.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Todolist", color=0xc92626)
-            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
-            await user.send(embed=embed)
-
-    async def list_task(user):
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="List tasks", value="Please select the name of the todolist", inline=False)
-        options = []
-        for list in os.listdir('./todolists/'):  # load json files
-            options.append(discord.ui.SelectOption(label=list, value=list), )
-        components = discord.ui.MessageComponents(
-            discord.ui.ActionRow(
-                discord.ui.SelectMenu(
-                    custom_id="select",
-                    options=options,
-                ),
-            ),
-            discord.ui.ActionRow(
-                discord.ui.Button(label="abort", custom_id="abort"),
-            ),
-        )
-        await user.send(embed=embed, components=components)
-
-        def check(interaction: discord.Interaction):
-            return True
-
-        interaction = await client.wait_for("component_interaction", check=check)
-        components.disable_components()
-        await interaction.response.edit_message(components=components)
-        if interaction.component.custom_id == "abort":
-            embed = discord.Embed(title="Todolist", color=0x68b38c)
-            embed.add_field(name="Aborted", value="Listing aborted", inline=False)
-            await user.send(embed=embed)
-            return
-
-        if os.path.exists("./todolists/" + interaction.values[0]):
-            with open("./todolists/" + interaction.values[0], "r") as f:
-                data = json.load(f)
-
-
-            if data["creator"] == str(user):
-                embed = discord.Embed(title="Todolist", color=0x68b38c)
-                for task in data["tasks"]:
-                    embed.add_field(name=task["name"], value=task["description"], inline=False)
-                await user.send(embed=embed)
-
-            else:
-                embed = discord.Embed(title="Todolist", color=0xc92626)
-                embed.add_field(name="Error", value="You do not have permission to view this todolist", inline=False)
-                await user.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Todolist", color=0xc92626)
-            embed.add_field(name="Error", value="Todolist does not exist", inline=False)
-            await user.send(embed=embed)
-
-
-
-
-
-#handle slash commands
-@client.event
-async def on_slash_command(interaction: discord.Interaction):
-    command_name = interaction.command_name
-    if command_name == "ping":
-        if round(client.latency * 1000) <= 50:
-            embed=discord.Embed(title="PING", description=f":ping_pong:The ping is **{round(client.latency *1000)}** milliseconds!", color=0x44ff44)
-        elif round(client.latency * 1000) <= 100:
-            embed=discord.Embed(title="PING", description=f":ping_pong:The ping is **{round(client.latency *1000)}** milliseconds!", color=0xffd000)
-        elif round(client.latency * 1000) <= 200:
-            embed=discord.Embed(title="PING", description=f":ping_pong:The ping is **{round(client.latency *1000)}** milliseconds!", color=0xff6600)
-        else:
-            embed=discord.Embed(title="PING", description=f":ping_pong:The ping is **{round(client.latency *1000)}** milliseconds!", color=0x990000)
-        await interaction.response.send_message(embed=embed)
-
-    if command_name == "apply":
-        embed=discord.Embed(title="Application", color=0x68b38c)
-        embed.add_field(name="Application started", value=interaction.user, inline=False)
-        await interaction.response.send_message(embed=embed)
-        await apply(interaction.user)
-
-    if command_name == "create-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Please check your DMs", value="Creation started", inline=False)
-        await interaction.response.send_message(embed=embed)
-        await todolist.create(user = interaction.user)
-
-    if command_name == "delete-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Please check your DMs", value="Deletion started", inline=False)
-        await interaction.response.send_message(embed=embed)
-        await todolist.delete(user = interaction.user)
-
-    if command_name == "add-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Please check your DMs", value="Adding task started", inline=False)
-        await interaction.response.send_message(embed=embed)
-        await todolist.add_task(user = interaction.user)
-
-    if command_name == "remove-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Please check your DMs", value="Removing task started", inline=False)
-        await interaction.response.send_message(embed=embed)
-        await todolist.delete_task(user = interaction.user)
-
-    if command_name == "list-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        for list in os.listdir('./todolists/'):  # load json files
-            with open("./todolists/" + list, "r") as f:
-                data = json.load(f)
-            embed.add_field(name=list, value="Created by " + data["creator"], inline=False)
-        await interaction.response.send_message(embed=embed)
-
-    if command_name == "view-todo":
-        embed = discord.Embed(title="Todolist", color=0x68b38c)
-        embed.add_field(name="Please check your DMs", value="Viewing todolist started", inline=False)
-        await interaction.response.send_message(embed=embed)
-        await todolist.list_task(user = interaction.user)
-
-    #custom commands
-    av_commands = os.listdir("./commands")
-    for command in av_commands:
-        command = json.load(open(f"./commands/{command}"))
-        if command["name"] == command_name:
-            if command["code"] != "":
-                try:
-                    commandresult = None
-                    await aexec(command["code"])
-                except:
-                    pass
-            if command["embed"] != "":
-                embed = discord.Embed(title=command["embed"]["title"], description=command["embed"]["description"], color=0x68b38c)
-                for field in command["embed"]["fields"]:
-                    embed.add_field(name=field["name"], value=field["value"], inline=False)
-                embed.set_footer(text=command["embed"]["footer"])
-                embed.set_thumbnail(url=command["embed"]["thumbnail"])
-                await interaction.response.send_message(embed=embed)
-            else:
-                await interaction.response.send_message(command["response"])
+        await client.register_application_commands()
+    print('------')
 
 
 def bot_main():
     client.run(token)
 
-#run bot standalone
+
+# run bot standalone
 if __name__ == "__main__":
     bot_main()
