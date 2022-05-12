@@ -14,7 +14,7 @@ Then run main.py.
 python3 main.py
 ```
 Go to the IP adress show in the Console and finish the Web-Setup.
-More information can be found in our [wiki](github.com/Webshort/perros/wiki).
+More information can be found in our [wiki](https://github.com/cloud-corp/perros/wiki).
 
 <sub>Note that PerrOS is designed to work on Linux especially Ubuntu Server, it might work any other os too but its not recomended</sup>
 ## Usage
