@@ -7,7 +7,7 @@ PerrOS is a Opensource Discord Bot to do it all!
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the python3 requirements.
 
 ```bash
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt --no-deps
 ```
 Then run main.py.
 ```bash
