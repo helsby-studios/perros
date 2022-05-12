@@ -21,7 +21,7 @@ More information can be found in our [wiki](https://github.com/cloud-corp/perros
 
 ### Dockerized installation:
 Install PerrOS in a docker container.
-####Automated:
+#### Automated:
 To perform an automated install (recommended for beginners) you can use the following commands:
 ```bash
 chmod +x dockerized.sh
@@ -34,7 +34,7 @@ To uninstall PerrOS you can use the following commands:
 chmod +x ./uninstall-dockerized.sh
 ./uninstall-dockerized.sh
 ````
-####Manual:
+#### Manual:
 To perform a manual install you can use the following commands:
 ```bash
 docker build -t perros .
