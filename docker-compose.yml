@@ -1,0 +1,13 @@
+version: '3'
+services:
+  perros:
+    build: .
+    container_name: perros
+    ports:
+      - "80:80"
+    volumes:
+      - perros-data:/app
+    restart: unless-stopped
+
+volumes:
+  perros-data:

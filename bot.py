@@ -193,7 +193,7 @@ async def on_ready():
         print("Dev mode enabled")
         await client.change_presence(activity=discord.Game(name="Perros Development"))
     else:
-        await client.change_presence(activity=discord.Game(name="cloudcorp.uk"))
+        await client.change_presence(activity=discord.Game(name="helsbystudios.com"))
         with open('profilepic.png', 'rb') as image:
             await client.user.edit(avatar=image.read())
 
