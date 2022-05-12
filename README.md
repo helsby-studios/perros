@@ -25,14 +25,14 @@ Install PerrOS in a docker container.
 To perform an automated install (recommended for beginners) you can use the following commands:
 ```bash
 chmod +x dockerized.sh
-./dockerized.sh
+sudo ./dockerized.sh
 ````
 After editing the config file you can enjoy PerrOS on port 80 and finish the [web](127.0.0.1) setup.
 
 To uninstall PerrOS you can use the following commands:
 ```bash
 chmod +x ./uninstall-dockerized.sh
-./uninstall-dockerized.sh
+sudo ./uninstall-dockerized.sh
 ````
 #### Manual:
 To perform a manual install you can use the following commands:
