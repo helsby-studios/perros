@@ -1,12 +1,9 @@
 import os
-
 import discord
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# invite link https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
-# new invite https://discord.com/oauth2/authorize?client_id=885971593782763530&permissions=8https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&scope=bot%20applications.commands
 
 # load envs
 load_dotenv()

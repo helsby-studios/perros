@@ -1,11 +1,10 @@
 # pylint: skip-file
 import datetime
 import json
+
 import discord
 import mc_rcon
 from discord.ext import commands
-
-
 
 
 class applications(commands.Cog):
