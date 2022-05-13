@@ -32,13 +32,11 @@
         <div class="card">
           <a href="/dashboard/{{guild.id}}">
             {% if guild.icon_url is not none %}
-            <img src="{{guild.icon_url}}" class="{{guild.class_color}}" alt="" id=""/>
+            <img src="{{guild.icon_url}}" class="{{guild.class_color}}"/>
             {% else %}
             <img
               src="https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png"
               class="{{guild.class_color}}"
-              alt=""
-              id=""
             />
             {% endif %}
           </a>
