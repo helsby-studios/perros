@@ -128,7 +128,7 @@ async def unload(ctx, cog: str):
             await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
         else:
             await ctx.bot.register_application_commands()
-    except discord.ext.commands.errors.ExtensionNotLoaded as not_loaded:
+    except discord.ext.commands.errors.ExtensionNotLoaded:
         await ctx.interaction.response.send_message(f"{cog} is not loaded.")
     except Exception as e:
         if dev_mode == "true":

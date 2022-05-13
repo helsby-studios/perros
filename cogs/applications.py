@@ -1,11 +1,11 @@
 # pylint: skip-file
 import datetime
 import json
-
 import discord
+import mc_rcon
 from discord.ext import commands
 
-import mc_rcon
+
 
 
 class applications(commands.Cog):
@@ -20,7 +20,7 @@ class applications(commands.Cog):
     async def apply(self, ctx):
         await ctx.send("Check your Dms!")
         try:
-            app = json.load(open(f"./applications.json"))
+            app = json.load(open("./applications.json"))
         except FileNotFoundError:
             app = {}
 

@@ -1,11 +1,10 @@
 import os
 import threading
-
+import bot
 from dotenv import load_dotenv
 from quart import Quart, redirect, render_template, url_for
 from quart_discord import DiscordOAuth2Session
 
-import bot
 
 # start bot
 thread = threading.Thread(target=bot.bot_main)
@@ -24,6 +23,7 @@ app.config["DISCORD_CLIENT_ID"] = dc_client_id
 app.config["DISCORD_CLIENT_SECRET"] = dc_client_secret
 app.config["DISCORD_REDIRECT_URI"] = dc_callback_uri
 discord = DiscordOAuth2Session(app)
+
 
 # setup webserver
 @app.route("/")
