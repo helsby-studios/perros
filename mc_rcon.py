@@ -1,6 +1,7 @@
-from mcrcon import MCRcon
 import os
+
 from dotenv import load_dotenv
+from mcrcon import MCRcon
 
 load_dotenv()
 MC_RCON_PASSWORD = os.getenv("MC_RCON_PASSWORD")

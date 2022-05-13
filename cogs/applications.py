@@ -1,8 +1,11 @@
+# pylint: skip-file
+import datetime
+import json
+
 import discord
 from discord.ext import commands
-import json
+
 import mc_rcon
-import datetime
 
 
 class applications(commands.Cog):
@@ -18,7 +21,7 @@ class applications(commands.Cog):
         await ctx.send("Check your Dms!")
         try:
             app = json.load(open(f"./applications.json"))
-        except:
+        except FileNotFoundError:
             app = {}
 
         if app != {}:
@@ -41,7 +44,6 @@ class applications(commands.Cog):
             interaction = await self.client.wait_for("component_interaction")
             components.disable_components()
             await interaction.response.edit_message(components=components)
-            app_id = interaction.values[0]
 
             for application in app:  # load json files
                 if interaction.values[0] == application:

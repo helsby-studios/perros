@@ -1,16 +1,9 @@
 import os
-import sys
-import time
-import random
-import json
+
 import discord
-import asyncio
 import requests
-import datetime
-import subprocess
+from discord.ext import commands
 from dotenv import load_dotenv
-from discord.ext import commands, tasks
-import mc_rcon
 
 # invite link https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback%2F&scope=bot%20applications.commands
 # new invite https://discord.com/oauth2/authorize?client_id=885971593782763530&permissions=8https://discord.com/api/oauth2/authorize?client_id=885971593782763530&permissions=8&scope=bot%20applications.commands
@@ -103,11 +96,11 @@ async def load(ctx, cog: str):
             await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
         else:
             await ctx.bot.register_application_commands()
-    except discord.ext.commands.errors.ExtensionAlreadyLoaded as alrdy_loaded:
+    except discord.ext.commands.errors.ExtensionAlreadyLoaded:
         await ctx.interaction.response.send_message(f"{cog} is already loaded.")
-    except discord.ext.commands.errors.ExtensionNotFound as not_found:
+    except discord.ext.commands.errors.ExtensionNotFound:
         await ctx.interaction.response.send_message(f"{cog} is not found.")
-    except discord.ext.commands.errors.ExtensionFailed as failed:
+    except discord.ext.commands.errors.ExtensionFailed:
         await ctx.interaction.response.send_message(f"{cog} failed to load.")
     except Exception as e:
         if dev_mode == "true":
@@ -195,7 +188,7 @@ async def download(ctx, link: str):
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user} (ID: {client.user.id})")
-    print("" - -----"")
+    print("------")
     if dev_mode == "true":
         print("Dev mode enabled")
         await client.change_presence(activity=discord.Game(name="Perros Development"))

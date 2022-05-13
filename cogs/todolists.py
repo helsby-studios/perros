@@ -1,7 +1,8 @@
+import json
+import os
+
 import discord
 from discord.ext import commands
-import os
-import json
 
 
 class todolists(commands.Cog):
