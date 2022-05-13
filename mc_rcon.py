@@ -3,20 +3,23 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-MC_RCON_PASSWORD = os.getenv('MC_RCON_PASSWORD')
-MC_RCON_HOST = os.getenv('MC_RCON_HOST')
+MC_RCON_PASSWORD = os.getenv("MC_RCON_PASSWORD")
+MC_RCON_HOST = os.getenv("MC_RCON_HOST")
 
 mcr = MCRcon(MC_RCON_HOST, MC_RCON_PASSWORD)
+
 
 def whitelist_player(player_name):
     mcr.connect()
     mcr.command("whitelist add " + player_name)
     mcr.disconnect()
 
+
 def unwhitelist_player(player_name):
     mcr.connect()
     mcr.command("whitelist remove " + player_name)
     mcr.disconnect()
+
 
 def banlist():
     mcr.connect()

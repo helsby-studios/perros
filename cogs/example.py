@@ -8,7 +8,8 @@ class Example(commands.Cog):
 
     @commands.command(application_command_meta=commands.ApplicationCommandMeta())
     async def examplecog(self, ctx):
-        await ctx.send('Examplecog!')
+        await ctx.send("Examplecog!")
+
 
 def setup(client):
     client.add_cog(Example(client))

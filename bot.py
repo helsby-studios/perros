@@ -41,12 +41,12 @@ async def add_role(channel, user: discord.Member, role):
             discord.ApplicationCommandOption(
                 name="one",
                 type=discord.ApplicationCommandOptionType.integer,
-                description="The first number that you want to add."
+                description="The first number that you want to add.",
             ),
             discord.ApplicationCommandOption(
                 name="two",
                 type=discord.ApplicationCommandOptionType.integer,
-                description="The second number that you want to add."
+                description="The second number that you want to add.",
             ),
         ]
     )
@@ -55,26 +55,32 @@ async def add(ctx, one: int, two: int):
     await ctx.interaction.response.send_message(one + two)
 
 
-@client.command(
-    application_command_meta=commands.ApplicationCommandMeta()
-)
+@client.command(application_command_meta=commands.ApplicationCommandMeta())
 async def ping(ctx):
     if round(client.latency * 1000) <= 50:
-        embed = discord.Embed(title="PING",
-                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
-                              color=0x44ff44)
+        embed = discord.Embed(
+            title="PING",
+            description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+            color=0x44FF44,
+        )
     elif round(client.latency * 1000) <= 100:
-        embed = discord.Embed(title="PING",
-                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
-                              color=0xffd000)
+        embed = discord.Embed(
+            title="PING",
+            description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+            color=0xFFD000,
+        )
     elif round(client.latency * 1000) <= 200:
-        embed = discord.Embed(title="PING",
-                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
-                              color=0xff6600)
+        embed = discord.Embed(
+            title="PING",
+            description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+            color=0xFF6600,
+        )
     else:
-        embed = discord.Embed(title="PING",
-                              description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
-                              color=0x990000)
+        embed = discord.Embed(
+            title="PING",
+            description=f":ping_pong:The ping is **{round(client.latency * 1000)}** milliseconds!",
+            color=0x990000,
+        )
     await ctx.interaction.response.send_message(embed=embed)
 
 
@@ -84,7 +90,7 @@ async def ping(ctx):
             discord.ApplicationCommandOption(
                 name="cog",
                 type=discord.ApplicationCommandOptionType.string,
-                description="The name of the cog you want to load."
+                description="The name of the cog you want to load.",
             ),
         ]
     )
@@ -116,7 +122,7 @@ async def load(ctx, cog: str):
             discord.ApplicationCommandOption(
                 name="cog",
                 type=discord.ApplicationCommandOptionType.string,
-                description="The name of the cog you want to unload."
+                description="The name of the cog you want to unload.",
             ),
         ]
     )
@@ -144,7 +150,7 @@ async def unload(ctx, cog: str):
             discord.ApplicationCommandOption(
                 name="cog",
                 type=discord.ApplicationCommandOptionType.string,
-                description="The name of the cog you want to reload."
+                description="The name of the cog you want to reload.",
             ),
         ]
     )
@@ -171,7 +177,7 @@ async def reload(ctx, cog: str):
             discord.ApplicationCommandOption(
                 name="link",
                 type=discord.ApplicationCommandOptionType.string,
-                description="The link of the cog you want to download. (raw)"
+                description="The link of the cog you want to download. (raw)",
             ),
         ]
     )
@@ -181,26 +187,27 @@ async def download(ctx, link: str):
     with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
         f.write(response.content)
     await ctx.interaction.response.send_message(
-        f"Downloaded {response.url.split('/')[-1]} \n use `load {response.url.split('/')[-1]}` to load it.")
+        f"Downloaded {response.url.split('/')[-1]} \n use load {response.url.split('/')[-1]}` to load it.",
+    )
 
 
 # onready event
 @client.event
 async def on_ready():
-    print(f'Logged in as {client.user} (ID: {client.user.id})')
-    print('------')
+    print(f"Logged in as {client.user} (ID: {client.user.id})")
+    print("" - -----"")
     if dev_mode == "true":
         print("Dev mode enabled")
         await client.change_presence(activity=discord.Game(name="Perros Development"))
     else:
         await client.change_presence(activity=discord.Game(name="helsbystudios.com"))
-        with open('profilepic.png', 'rb') as image:
+        with open("profilepic.png", "rb") as image:
             await client.user.edit(avatar=image.read())
 
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
             try:
-                client.load_extension(f'cogs.{filename[:-3]}')
+                client.load_extension(f"cogs.{filename[:-3]}")
                 print(f"Loaded {filename[:-3]}")
             except Exception as e:
                 print(f"Failed to load {filename[:-3]}\n{e}")
@@ -208,7 +215,7 @@ async def on_ready():
         await client.register_application_commands(guild=discord.Object(guild_id))
     else:
         await client.register_application_commands()
-    print('------')
+    print("------")
 
 
 def bot_main():

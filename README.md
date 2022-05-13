@@ -4,7 +4,7 @@ PerrOS is a Opensource Discord Bot to do it all!
 
 ## Installation
 
-### Manual installation:
+### Manual installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the python3 requirements.
 
 ```bash
@@ -19,9 +19,9 @@ More information can be found in our [wiki](https://github.com/cloud-corp/perros
 
 <sub>Note that PerrOS is designed to work on Linux especially Ubuntu Server, it might work any other os too but its not recomended</sup>
 
-### Dockerized installation:
+### Dockerized installation
 Install PerrOS in a docker container.
-#### Automated:
+#### Automated
 To perform an automated install (recommended for beginners) you can use the following commands:
 ```bash
 chmod +x dockerized.sh
@@ -34,7 +34,7 @@ To uninstall PerrOS you can use the following commands:
 chmod +x ./uninstall-dockerized.sh
 sudo ./uninstall-dockerized.sh
 ````
-#### Manual:
+#### Manual
 To perform a manual install you can use the following commands:
 ```bash
 docker build -t perros .
