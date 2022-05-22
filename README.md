@@ -41,7 +41,7 @@ sudo ./uninstall-dockerized.sh
 To perform a manual install you can use the following commands:
 ```bash
 docker build -t perros .
-docker run perros -p 80:80 -v perros-data:/app -d
+docker run -p 80:80 -v perros-data:/app -d perros
 ````
 To uninstall PerrOS you can use the following commands:
 ```bash
@@ -54,6 +54,7 @@ docker volume remove prerros-data
 To dump the Volumes of PerrOS you can use the following commands:
 ```bash
 docker cp perros:/app .
+docker cp . perros:/app
 ```
 
 Coming Soon
