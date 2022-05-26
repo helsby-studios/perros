@@ -46,7 +46,7 @@ docker run -p 80:80 -v perros-data:/app -d perros
 Alternative commands:
 ```bash
 docker build -t perros .
-docker run -p 80:80 -v /path/to/folder:/app -d perros
+docker run --network="host" -p 80:80 -v /path/to/folder:/app -d perros
 ```
 
 To uninstall PerrOS you can use the following commands:
