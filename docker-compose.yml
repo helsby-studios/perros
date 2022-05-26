@@ -4,6 +4,7 @@ services:
   perros:
     build: .
     container_name: perros
+    network_mode: "host"
     ports:
       - "80:80"
     volumes:
