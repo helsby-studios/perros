@@ -91,13 +91,13 @@ class applications(commands.Cog):
                             embed = discord.Embed(title="Application", color=0x68B38C)
                             embed.add_field(
                                 name=field["question"],
-                                value="awnser below",
+                                value="answer below",
                                 inline=False,
                             )
                             await ctx.interaction.user.send(embed=embed)
                             awnser = await self.client.wait_for(
                                 "message",
-                                timeout=30,
+                                timeout=100,
                                 check=lambda message: message.author
                                 == ctx.interaction.user,
                             )
