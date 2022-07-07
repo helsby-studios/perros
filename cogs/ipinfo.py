@@ -10,7 +10,7 @@ class IPinfo(commands.Cog):
 
     @commands.command(application_command_meta=commands.ApplicationCommandMeta())
     async def ipinfo(self, ctx):
-        ip = get('https://api.ipify.org').text
+        ip = get("https://api.ipify.org").text
         embed = discord.Embed(
             title="IP Info", description="Current IP:" + ip, color=0x00FF00
         )
@@ -18,7 +18,7 @@ class IPinfo(commands.Cog):
             embed.add_field(
                 name="IP Changed",
                 value="From " + self.last_ip + " to " + ip,
-                inline=False
+                inline=False,
             )
             self.last_ip = ip
         await ctx.interaction.response.send_message(embed=embed)
