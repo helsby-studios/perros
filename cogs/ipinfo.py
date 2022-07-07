@@ -6,7 +6,7 @@ from requests import get
 class IPinfo(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.last_ip = None
+        self.last_ip = get("https://api.ipify.org").text
 
     @commands.command(application_command_meta=commands.ApplicationCommandMeta())
     async def ipinfo(self, ctx):
