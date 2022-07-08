@@ -5,7 +5,7 @@ import requests
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# load envs
+# load env
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
 dc_client_id = os.getenv("DISCORD_CLIENT_ID")
