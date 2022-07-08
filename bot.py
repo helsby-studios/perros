@@ -208,10 +208,14 @@ async def disable(ctx, cog: str):
             os.rename(f"cogs/{cog}.py", f"cogs/{cog}.disabled")
             await ctx.interaction.response.send_message(f"Disabled {cog}")
         except FileNotFoundError:
-            ctx.interaction.response.send_message(f"Failed to disable {cog}, it is probably not loaded.")
+            ctx.interaction.response.send_message(
+                f"Failed to disable {cog}, it is probably not loaded."
+            )
         except Exception as e:
             if dev_mode == "true":
-                await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+                await ctx.interaction.response.send_message(
+                    f"{cog} failed to disable.\n{e}"
+                )
             else:
                 pass
     except discord.ext.commands.errors.ExtensionNotLoaded:
@@ -219,15 +223,21 @@ async def disable(ctx, cog: str):
             os.rename(f"cogs/{cog}.py", f"cogs/{cog}.disabled")
             await ctx.interaction.response.send_message(f"Disabled {cog}")
         except FileNotFoundError:
-            ctx.interaction.response.send_message(f"Failed to disable {cog}, it is probably not loaded.")
+            ctx.interaction.response.send_message(
+                f"Failed to disable {cog}, it is probably not loaded."
+            )
         except Exception as e:
             if dev_mode == "true":
-                await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+                await ctx.interaction.response.send_message(
+                    f"{cog} failed to disable.\n{e}"
+                )
             else:
                 pass
     except Exception as e:
         if dev_mode == "true":
-            await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+            await ctx.interaction.response.send_message(
+                f"{cog} failed to disable.\n{e}"
+            )
         else:
             pass
 
@@ -247,9 +257,13 @@ async def disable(ctx, cog: str):
 async def enable(ctx, cog: str):
     try:
         os.rename(f"cogs/{cog}.disabled", f"cogs/{cog}.py")
-        await ctx.interaction.response.send_message(f"enabled {cog}, load with load {cog}")
+        await ctx.interaction.response.send_message(
+            f"enabled {cog}, load with load {cog}"
+        )
     except FileNotFoundError:
-        ctx.interaction.response.send_message(f"Failed to enable {cog}, it is probably not disabled.")
+        ctx.interaction.response.send_message(
+            f"Failed to enable {cog}, it is probably not disabled."
+        )
     except Exception as e:
         if dev_mode == "true":
             await ctx.interaction.response.send_message(f"{cog} failed to enable.\n{e}")
