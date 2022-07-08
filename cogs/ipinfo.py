@@ -11,7 +11,7 @@ class IPinfo(commands.Cog):
     async def ipinfo(self, ctx):
         ip = get("https://api.ipify.org").text
         embed = discord.Embed(
-            title="IP Info", description="Current IP:" + str(ip), color=0x00FF00
+            title="IP Info", description="Current IP: " + str(ip), color=0x00FF00
         )
         await ctx.interaction.response.send_message(embed=embed)
 
