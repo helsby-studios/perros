@@ -85,6 +85,7 @@ async def ping(ctx):
         ]
     )
 )
+@commands.has_permissions(administrator=True)
 async def load(ctx, cog: str):
     try:
         ctx.bot.load_extension(f"cogs.{cog}")
@@ -117,6 +118,7 @@ async def load(ctx, cog: str):
         ]
     )
 )
+@commands.has_permissions(administrator=True)
 async def unload(ctx, cog: str):
     try:
         ctx.bot.unload_extension(f"cogs.{cog}")
@@ -145,6 +147,7 @@ async def unload(ctx, cog: str):
         ]
     )
 )
+@commands.has_permissions(administrator=True)
 async def reload(ctx, cog: str):
     try:
         ctx.bot.unload_extension(f"cogs.{cog}")
@@ -172,6 +175,7 @@ async def reload(ctx, cog: str):
         ]
     )
 )
+@commands.has_permissions(administrator=True)
 async def download(ctx, link: str):
     response = requests.get(link)
     with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
@@ -181,7 +185,79 @@ async def download(ctx, link: str):
     )
 
 
-# onready event
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to disable.",
+            ),
+        ]
+    )
+)
+@commands.has_permissions(administrator=True)
+async def disable(ctx, cog: str):
+    try:
+        ctx.bot.unload_extension(f"cogs.{cog}")
+        if dev_mode == "true":
+            await ctx.bot.register_application_commands(guild=discord.Object(guild_id))
+        else:
+            await ctx.bot.register_application_commands()
+        try:
+            os.rename(f"cogs/{cog}.py", f"cogs/{cog}.disabled")
+            await ctx.interaction.response.send_message(f"Disabled {cog}")
+        except FileNotFoundError:
+            ctx.interaction.response.send_message(f"Failed to disable {cog}, it is probably not loaded.")
+        except Exception as e:
+            if dev_mode == "true":
+                await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+            else:
+                pass
+    except discord.ext.commands.errors.ExtensionNotLoaded:
+        try:
+            os.rename(f"cogs/{cog}.py", f"cogs/{cog}.disabled")
+            await ctx.interaction.response.send_message(f"Disabled {cog}")
+        except FileNotFoundError:
+            ctx.interaction.response.send_message(f"Failed to disable {cog}, it is probably not loaded.")
+        except Exception as e:
+            if dev_mode == "true":
+                await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+            else:
+                pass
+    except Exception as e:
+        if dev_mode == "true":
+            await ctx.interaction.response.send_message(f"{cog} failed to disable.\n{e}")
+        else:
+            pass
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to enable.",
+            ),
+        ]
+    )
+)
+@commands.has_permissions(administrator=True)
+async def enable(ctx, cog: str):
+    try:
+        os.rename(f"cogs/{cog}.disabled", f"cogs/{cog}.py")
+        await ctx.interaction.response.send_message(f"enabled {cog}, load with load {cog}")
+    except FileNotFoundError:
+        ctx.interaction.response.send_message(f"Failed to enable {cog}, it is probably not disabled.")
+    except Exception as e:
+        if dev_mode == "true":
+            await ctx.interaction.response.send_message(f"{cog} failed to enable.\n{e}")
+        else:
+            pass
+
+
+# on_ready event
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user} (ID: {client.user.id})")
