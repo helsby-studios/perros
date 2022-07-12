@@ -4,6 +4,7 @@ import discord
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
+import json
 
 # load env
 load_dotenv()
@@ -269,6 +270,82 @@ async def enable(ctx, cog: str):
             await ctx.interaction.response.send_message(f"{cog} failed to enable.\n{e}")
         else:
             pass
+
+
+@client.command(application_command_meta=commands.ApplicationCommandMeta())
+@commands.has_permissions(administrator=True)
+async def repos(ctx):
+    with open("sources.txt", "r") as f:
+        reposit = f.read()
+    embed = discord.Embed(
+        title="Available Cogs:",
+        description="Available cogs from the repository in sources.txt",
+    )
+    for repo in reposit.split("\n"):
+        index = requests.get(repo).text
+        index = json.loads(index)
+        embed.add_field(
+            name=index["name"] + ":",
+            value=index["description"] + "\n id: " + index["id"],
+            inline=False,
+        )
+        for cog in index["cogs"]:
+            embed.add_field(
+                name=index["cogs"][cog]["name"],
+                value=index["cogs"][cog]["description"],
+                inline=False,
+            )
+    await ctx.interaction.response.send_message(embed=embed)
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="cog",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The name of the cog you want to download.",
+            ),
+        ]
+    )
+)
+@commands.has_permissions(administrator=True)
+async def repo_download(ctx, cog: str):
+    with open("sources.txt", "r") as f:
+        reposit = f.read()
+    for repo in reposit.split("\n"):
+        index = requests.get(repo).text
+        index = json.loads(index)
+        for cogs in index["cogs"]:
+            if cog == index["cogs"][cogs]["name"]:
+                file = index["cogs"][cogs]["filename"]
+                link = repo.strip("index.json") + file
+                response = requests.get(link)
+                with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
+                    f.write(response.content)
+                await ctx.interaction.response.send_message(
+                    f"Downloaded {response.url.split('/')[-1]} \n use /load {response.url.split('/')[-1].strip('.py')} to load it.",
+                )
+
+
+@client.command(
+    application_command_meta=commands.ApplicationCommandMeta(
+        options=[
+            discord.ApplicationCommandOption(
+                name="url",
+                type=discord.ApplicationCommandOptionType.string,
+                description="The url to the repo you want to add.",
+            ),
+        ]
+    )
+)
+@commands.has_permissions(administrator=True)
+async def repo_add(ctx, url: str):
+    with open("sources.txt", "a") as f:
+        f.write("\n" + url)
+    await ctx.interaction.response.send_message(
+        f"Added {url} to sources.txt, use /repos to see the list of available cogs."
+    )
 
 
 # on_ready event
