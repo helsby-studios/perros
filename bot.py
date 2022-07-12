@@ -6,6 +6,11 @@ import requests
 from discord.ext import commands
 from dotenv import load_dotenv
 
+try:
+    from pip import main as pipmain
+except:
+    from pip._internal.main import main as pipmain
+
 # load env
 load_dotenv()
 token = os.getenv("DISCORD_TOKEN")
@@ -319,6 +324,18 @@ async def repo_download(ctx, cog: str):
         for cogs in index["cogs"]:
             if cog == index["cogs"][cogs]["name"]:
                 file = index["cogs"][cogs]["filename"]
+                requirements = index["cogs"][cogs]["requirements"]
+                requirements = requirements.split(", ")
+                for req in requirements:
+                    if req == "discord.py":
+                        pass
+                    else:
+                        print(req)
+                        try:
+                            pipmain(["install", req])
+                        except Exception as e:
+                            print(e)
+                            pass
                 link = repo.strip("index.json") + file
                 response = requests.get(link)
                 with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
