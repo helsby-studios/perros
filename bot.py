@@ -316,9 +316,9 @@ async def repo_download(ctx, cog: str):
     for repo in reposit.split("\n"):
         index = requests.get(repo).text
         index = json.loads(index)
-        for cogs in str(index["cogs"]):
-            if cog == str(index["cogs"][cogs]["name"]):
-                file = str(index["cogs"][cogs]["filename"])
+        for cogs in index["cogs"]:
+            if cog == index["cogs"][cogs]["name"]:
+                file = index["cogs"][cogs]["filename"]
                 link = repo.strip("index.json") + file
                 response = requests.get(link)
                 with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
