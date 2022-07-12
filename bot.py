@@ -334,7 +334,7 @@ async def repo_download(ctx, cog: str):
             discord.ApplicationCommandOption(
                 name="url",
                 type=discord.ApplicationCommandOptionType.string,
-                description="The url to the repo you want to add.",
+                description="The url to the repo you want to add. (needs to be raw)",
             ),
         ]
     )
