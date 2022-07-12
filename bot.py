@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 try:
     from pip import main as pipmain
-except:
+except Exception as e:
     from pip._internal.main import main as pipmain
 
 # load env
