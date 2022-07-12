@@ -1,10 +1,10 @@
+import json
 import os
 
 import discord
 import requests
 from discord.ext import commands
 from dotenv import load_dotenv
-import json
 
 # load env
 load_dotenv()
@@ -316,15 +316,15 @@ async def repo_download(ctx, cog: str):
     for repo in reposit.split("\n"):
         index = requests.get(repo).text
         index = json.loads(index)
-        for cogs in index["cogs"]:
-            if cog == index["cogs"][cogs]["name"]:
-                file = index["cogs"][cogs]["filename"]
+        for cogs in str(index["cogs"]):
+            if cog == str(index["cogs"][cogs]["name"]):
+                file = str(index["cogs"][cogs]["filename"])
                 link = repo.strip("index.json") + file
                 response = requests.get(link)
                 with open(f"cogs/{response.url.split('/')[-1]}", "wb") as f:
                     f.write(response.content)
                 await ctx.interaction.response.send_message(
-                    f"Downloaded {response.url.split('/')[-1]} \n use /load {response.url.split('/')[-1].strip('.py')} to load it.",
+                    f"Downloaded {link.split('/')[-1]} \n use /load {link.split('/')[-1].strip('.py')} to load it.",
                 )
 
 
