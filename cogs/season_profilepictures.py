@@ -32,13 +32,17 @@ class season_profilepictures(commands.Cog):
         now = now.replace(year=Y)
         season = next(season for season, (start, end) in seasons if start <= now <= end)
         if season == "winter":
-            await self.client.edit_profile(avatar=discord.File("winter.png"))
+            with open("winter.png", "rb") as image:
+                await self.client.user.edit(avatar=image.read())
         elif season == "spring":
-            await self.client.edit_profile(avatar=discord.File("spring.png"))
+            with open("spring.png", "rb") as image:
+                await self.client.user.edit(avatar=image.read())
         elif season == "summer":
-            await self.client.edit_profile(avatar=discord.File("summer.png"))
+            with open("summer.png", "rb") as image:
+                await self.client.user.edit(avatar=image.read())
         elif season == "autumn":
-            await self.client.edit_profile(avatar=discord.File("fall.png"))
+            with open("fall.png", "rb") as image:
+                await self.client.user.edit(avatar=image.read())
 
     @commands.command(application_command_meta=commands.ApplicationCommandMeta())
     @commands.has_permissions(administrator=True)
@@ -71,7 +75,10 @@ class season_profilepictures(commands.Cog):
             and os.path.exists("spring.png")
             and os.path.exists("fall.png")
         ):
-            self.picture_update_service.start()
+            try:
+                self.picture_update_service.start()
+            except RuntimeError:
+                pass
 
 
 def setup(client):
