@@ -392,6 +392,28 @@ async def on_ready():
     print("------")
 
 
+async def get_guild_count():
+    return len(client.guilds)  # returns the len of the guilds to the webapp
+
+
+async def get_guild_ids():
+    final = []
+    for guild in client.guilds:
+        final.append(guild.id)
+    return final  # returns the guild ids to the webapp
+
+
+async def get_guild(data):
+    guild = client.get_guild(data)
+    if guild is None: return None
+    guild_data = {
+        "name": guild.name,
+        "id": guild.id,
+    }
+
+    return guild_data  # returns info about the guild to the webapp
+
+
 def bot_main():
     client.run(token)
 
