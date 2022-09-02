@@ -22,7 +22,9 @@ dc_callback_uri = os.getenv("DISCORD_CALLBACK_URI")
 
 # initiailize app
 app = Quart(__name__)
-app.secret_key = b"TiV7TDXK39uNgaLtwB7EXkfoZfQpJ615vDKqg"  # key used to sign session cookies
+app.secret_key = (
+    b"TiV7TDXK39uNgaLtwB7EXkfoZfQpJ615vDKqg"  # key used to sign session cookies
+)
 app.config["DISCORD_CLIENT_ID"] = dc_client_id
 app.config["DISCORD_CLIENT_SECRET"] = dc_client_secret
 app.config["DISCORD_REDIRECT_URI"] = dc_callback_uri
