@@ -405,7 +405,8 @@ async def get_guild_ids():
 
 async def get_guild(data):
     guild = client.get_guild(data)
-    if guild is None: return None
+    if guild is None:
+        return None
     guild_data = {
         "name": guild.name,
         "id": guild.id,
