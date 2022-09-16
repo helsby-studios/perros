@@ -9,28 +9,31 @@ class tmp_voicechannels(commands.Cog):
 
     @tasks.loop(seconds=5)
     async def vc_manager(self):
-        voice_channel_list = []
         for server in self.client.guilds:
+            voice_channel_list = []
             for channel in server.channels:
                 if str(channel.type) == "voice":
                     voice_channel_list.append(channel)
-        exists = False
-        for channel in voice_channel_list:
-            if channel.name == "Create a Voice Channel":
-                exists = True
-                for member in channel.members:
-                    for server in self.client.guilds:
+            exists = False
+            for channel in voice_channel_list:
+                if channel.name == "Create a Voice Channel":
+                    exists = True
+                    for member in channel.members:
+                        print(member)
+                        print(member.voice.channel)
+                        print(channel)
+                        print(channel.id)
                         await server.create_voice_channel("tmp-" + member.name)
                         channel = discord.utils.get(
                             server.channels, name="tmp-" + member.name
                         )
                         await member.move_to(channel)
 
-            if len(channel.members) == 0 and "tmp-" in channel.name:
-                await channel.delete()
-        if not exists:
-            for server in self.client.guilds:
-                await server.create_voice_channel("Create a Voice Channel")
+                if len(channel.members) == 0 and "tmp-" in channel.name:
+                    await channel.delete()
+            if not exists:
+                for guild in self.client.guilds:
+                    await guild.create_voice_channel("Create a Voice Channel")
 
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(
