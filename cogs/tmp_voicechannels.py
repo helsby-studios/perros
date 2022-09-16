@@ -20,9 +20,9 @@ class tmp_voicechannels(commands.Cog):
                 exists = True
                 for member in channel.members:
                     for server in self.client.guilds:
-                        await server.create_voice_channel("tmp" + member.name)
+                        await server.create_voice_channel("tmp-" + member.name)
                         channel = discord.utils.get(
-                            server.channels, name="tmp" + member.name
+                            server.channels, name="tmp-" + member.name
                         )
                         await member.move_to(channel)
 
