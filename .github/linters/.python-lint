@@ -1,2 +1,8 @@
 [MESSAGES CONTROL]
-disable=2
+disable=raw-checker-failed,
+        bad-inline-option,
+        locally-disabled,
+        file-ignored,
+        suppressed-message,
+        useless-suppression,
+        deprecated-pragma,
