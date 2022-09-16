@@ -12,7 +12,7 @@ class tmp_voicechannels(commands.Cog):
         voice_channel_list = []
         for server in self.client.guilds:
             for channel in server.channels:
-                if str(channel.type) == 'voice':
+                if str(channel.type) == "voice":
                     voice_channel_list.append(channel)
         exists = False
         for channel in voice_channel_list:
@@ -21,15 +21,16 @@ class tmp_voicechannels(commands.Cog):
                 for member in channel.members:
                     for server in self.client.guilds:
                         await server.create_voice_channel("tmp" + member.name)
-                        channel = discord.utils.get(server.channels, name="tmp" + member.name)
+                        channel = discord.utils.get(
+                            server.channels, name="tmp" + member.name
+                        )
                         await member.move_to(channel)
 
             if len(channel.members) == 0 and "tmp-" in channel.name:
                 await channel.delete()
-        if exists == False:
+        if not exists:
             for server in self.client.guilds:
-                await server.create_voice_channel('Create a Voice Channel')
-
+                await server.create_voice_channel("Create a Voice Channel")
 
     @commands.command(
         application_command_meta=commands.ApplicationCommandMeta(
@@ -63,6 +64,7 @@ class tmp_voicechannels(commands.Cog):
         channel = ctx.interaction.user.voice.channel
         await channel.edit(user_limit=limit)
         await ctx.interaction.response.send_message(f"Set channel limit to {limit}")
+
 
 def setup(client):
     client.add_cog(tmp_voicechannels(client))
