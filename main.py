@@ -4,11 +4,7 @@ import threading
 import bot
 from dotenv import load_dotenv
 from quart import Quart, redirect, render_template, url_for
-from quart_discord import (
-    DiscordOAuth2Session,
-    Unauthorized,
-    requires_authorization,
-)
+from quart_discord import DiscordOAuth2Session, Unauthorized, requires_authorization
 
 # start bot
 thread = threading.Thread(target=bot.bot_main)
