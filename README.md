@@ -70,6 +70,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+For more detailed guidelines please read our [wiki](https://github.com/helsby-studios/perros/wiki/Contributing)
+
 ## License
 PerrOS is licensed under
 [GPLV3](https://choosealicense.com/licenses/gpl-3.0/)
