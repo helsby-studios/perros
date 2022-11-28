@@ -2,7 +2,7 @@
 # These are supported funding model platforms
 
 github: # [user1, user2]
-patreon: GameTec_live
+patreon: #
 open_collective: # Open Collective username
 ko_fi: # Ko-fi username
 tidelift: # npm/babel
@@ -11,4 +11,4 @@ liberapay: # Liberapay username
 issuehunt: # IssueHunt username
 otechie: # Otechie username
 lfx_crowdfunding: # cloud-foundry
-custom: # ['link1', 'link2']
+custom: 0x1Eb4317add0E70873A88F36987b0003d8830D87D
