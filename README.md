@@ -77,5 +77,5 @@ PerrOS is licensed under
 [GPLV3](https://choosealicense.com/licenses/gpl-3.0/)
 
 
-If anyone is crazy enough to donate to a random developer in Europe, heres my ETH address: 
+If anyone is crazy enough to donate to a random developer in Europe, heres my ETH address:
 0x1Eb4317add0E70873A88F36987b0003d8830D87D
