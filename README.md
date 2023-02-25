@@ -1,3 +1,4 @@
+This is the Rewrite Branch, proceed with caution!
 # PerrOS
 PerrOS is a Opensource Discord Bot to do it all!  
 [![Super-Linter](https://github.com/cloud-corp/perros/actions/workflows/super-linter.yml/badge.svg)](https://github.com/cloud-corp/perros/actions/workflows/super-linter.yml)  
