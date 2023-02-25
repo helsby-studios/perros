@@ -2,7 +2,7 @@
 PerrOS is a Opensource Discord Bot to do it all!  
 [![Super-Linter](https://github.com/cloud-corp/perros/actions/workflows/super-linter.yml/badge.svg)](https://github.com/cloud-corp/perros/actions/workflows/super-linter.yml)  
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com/download/server/)
-[![Discord](https://img.shields.io/badge/%3CPerros%3E-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/pZKPM5kWyk)
+[![Discord](https://img.shields.io/badge/%3CPerros%3E-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/DJ2A4wxncK)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
 
 ## Installation
