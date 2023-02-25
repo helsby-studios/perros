@@ -1,0 +1,3 @@
+Database layout:
+Tables for all of the main stuff (eg users, config, repos, etc). Use guildID to filter out data for each guild.
+One Table for cogs to fight over. (Auto incr Prim Key, Cog ID, Data1, Data2, Data3) A cog may only access its own cells / data...
