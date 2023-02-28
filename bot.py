@@ -28,7 +28,7 @@ class main(client.Plugin):
     async def on_ready(self):
         log.info("Perros Ready.")
 
-    @client.command(name="Hello", description="World")
+    @client.command(name="hello", description="world")
     async def hello(self, interaction: novus.Interaction):
         await interaction.send("Hello World")
 
