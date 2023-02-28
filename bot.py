@@ -32,6 +32,7 @@ class main(client.Plugin):
     async def hello(self, interaction: novus.Interaction):
         await interaction.send("Hello World")
 
+bot.add_plugin(main)
+
 if __name__ == "__main__":
-    bot.add_plugin(main)
     asyncio.run(bot.run(sync=True))
