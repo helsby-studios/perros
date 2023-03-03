@@ -12,7 +12,7 @@ greenlet==2.0.2
 idna==3.4
 mcrcon==0.7.0
 multidict==6.0.4
-novus @ git+https://github.com/Voxel-Fox-Ltd/Novus.git@cd2e7b5e5877778bc070e0def9d407ab05701d7d
+novus @ git+https://github.com/Voxel-Fox-Ltd/Novus.git@0e6127f8ee6222612c34d559d701a12ff78410f7
 python-dotenv==1.0.0
 requests==2.28.2
 SQLAlchemy==2.0.4
