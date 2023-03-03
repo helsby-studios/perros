@@ -34,5 +34,9 @@ class main(client.Plugin):
 
 bot.add_plugin(main)
 
+for plugin in os.listdir("plugins"):
+    if plugin.endswith(".py"):
+        bot.add_plugin_file(f"plugins.{plugin[:-3]}:{plugin[:-3]}")
+
 if __name__ == "__main__":
     asyncio.run(bot.run(sync=True))
