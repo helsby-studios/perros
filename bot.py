@@ -23,6 +23,7 @@ config = client.Config(
 )
 bot = client.Client(config)
 
+
 class main(client.Plugin):
     @client.event("READY")
     async def on_ready(self):
@@ -32,10 +33,6 @@ class main(client.Plugin):
     async def hello(self, interaction: novus.Interaction):
         await interaction.send("Hello World")
 
-    @client.command(name="ping", description="returns the bot's latency")
-    async def ping(self, interaction: novus.Interaction):
-        ping = bot.ws.latency * 1000
-        await interaction.send(f"Pong! {int(ping)}ms")
 
 bot.add_plugin(main)
 
