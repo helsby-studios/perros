@@ -1,8 +1,8 @@
 import novus
 from novus.ext import client
 
-import requests
-import time
+import aiohttp
+import asyncio
 import hashlib
 
 
@@ -50,7 +50,7 @@ class passwordguesser(client.Plugin):
             embed.add_field(name="Score", value=str(score))
             embed.add_field(name="Instructions", value="Send a message to guess the password")
             await interaction.edit_original(embeds=[embed], components=components)
-            time.sleep(1)
+            await asyncio.sleep(1)
 
         # set running to false and send a message with the score
         running = False
@@ -75,9 +75,11 @@ class passwordguesser(client.Plugin):
             # hash the message content with sha1
             hashed = hashlib.sha1(guess.encode()).hexdigest()
             # send the hash to the api
-            r = requests.get(f"https://api.pwnedpasswords.com/range/{hashed[:5]}")
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"https://api.pwnedpasswords.com/range/{hashed[:5]}") as response:
+                    r = await response.text()
             # check if the hash is in the api
-            if hashed[5:].upper() in r.text and guess not in already_guessed:
+            if hashed[5:].upper() in r and guess not in already_guessed:
                 # if it is, add one to the score and react with a checkmark
                 await message.add_reaction("✅")
                 already_guessed.append(guess)
