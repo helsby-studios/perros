@@ -12,9 +12,12 @@ class passwordguesser(client.Plugin):
         global running
         global score
         global already_guessed
+        global joined
         running = True
         score = 0
         already_guessed = []
+        joined = []
+        joined.append(interaction.user.id)
         # create a embed with a timer and buttons to stop
         embed = novus.Embed(
             title="Password Guesser",
@@ -31,6 +34,11 @@ class passwordguesser(client.Plugin):
                     label="Stop",
                     style=novus.ButtonStyle.danger,
                     custom_id="stop",
+                ),
+                novus.Button(
+                    label="Join",
+                    style=novus.ButtonStyle.success,
+                    custom_id="join",
                 ),
             ]),
         ]
@@ -69,7 +77,7 @@ class passwordguesser(client.Plugin):
         global running
         global score
         global already_guessed
-        if running and message.author.bot == False:
+        if running and message.author.bot == False and message.author.id in joined:
             guess = message.content
 
             # hash the message content with sha1
@@ -92,6 +100,15 @@ class passwordguesser(client.Plugin):
     async def stop(self, interaction: novus.Interaction):
         global running
         global score
-        if running:
+        if running == True and interaction.user.id in joined:
             running = False
         await interaction.send("Game stopped", ephemeral=True)
+
+    @client.event.filtered_component("join")
+    async def join(self, interaction: novus.Interaction):
+        global joined
+        if interaction.user.id not in joined:
+            joined.append(interaction.user.id)
+            await interaction.send("You joined the game", ephemeral=True)
+        else:
+            await interaction.send("You are already in the game", ephemeral=True)
