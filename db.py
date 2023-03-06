@@ -43,6 +43,20 @@ class cogdata(base):
         self.data2 = data2
         self.data3 = data3
 
+# game stuff
+class game(base):
+    __tablename__ = 'game'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    guildid = Column(Integer)
+    difficulty = Column(String)
+    day = Column(Integer)
+    map = Column(String)
+
+    def __init__(self, guildid, difficulty, day, map):
+        self.guildid = guildid
+        self.difficulty = difficulty
+        self.day = day
+        self.map = map
 async def init_models():
     async with engine.begin() as conn:
         await conn.run_sync(base.metadata.drop_all)

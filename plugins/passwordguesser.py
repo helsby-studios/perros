@@ -57,7 +57,7 @@ class passwordguesser(client.Plugin):
         embed = novus.Embed(
             title="Password Guesser",
             description="Time's up!",
-            color=0x00FF00,
+            color=0xFF0000,
         )
         embed.add_field(name="Score", value=str(score))
         await interaction.edit_original(embeds=[embed], components=[])
