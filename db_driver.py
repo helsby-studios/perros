@@ -61,7 +61,8 @@ async def update_cogdata(id, cogid, cog, name, value, data1, data2, data3):
 
 
 async def delete_cogdata(id):
-    cogdata = await session.query(db.cogdata).filter_by(id=id).first()
+    result = await session.execute(select(db.cogdata).filter_by(id=id))
+    cogdata = result.scalars().first()
     session.delete(cogdata)
     await session.commit()
     return cogdata
@@ -105,7 +106,7 @@ async def update_config(id, name, value):
 
 
 async def delete_config(id):
-    config = await session.query(db.config).filter_by(id=id).first()
+    config = await get_config_by_id(id)
     session.delete(config)
     await session.commit()
     return config
@@ -125,7 +126,7 @@ async def get_game(guildid):
 
 
 async def delete_game(guildid):
-    game = await session.execute(select(db.game).filter_by(guildid=guildid)).scalars().first()
+    game = await get_game(guildid)
     session.delete(game)
     await session.commit()
     return game
